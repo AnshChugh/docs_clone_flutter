@@ -46,3 +46,6 @@ app.*.map.json
 #secret oauth keys
 /android/app/google_services.json
 /web/google_services.json
+
+/server/node_modules/
+/server/secure_credentials.js
