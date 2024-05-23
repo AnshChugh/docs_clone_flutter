@@ -4,6 +4,7 @@ const {password} = require('./secure_credentials');
 const {authRouter} = require('./routes/auth');
 // idk what is this for
 const cors = require('cors');
+const documentRouter = require('./routes/document');
 const PORT = process.env.PORT | 3001;
 const app = express();
 
@@ -15,6 +16,9 @@ app.use(cors());
 
 app.use(express.json());
 app.use(authRouter);
+app.use(documentRouter);
+
+
 mongoose.connect(DB).then(()=>{
     console.log('connection successful');
 }).catch((err)=>{
