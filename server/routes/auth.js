@@ -30,7 +30,7 @@ authRouter.post('/api/signup', async (req,res)=>{
 });
 authRouter.get("/", auth , async (req,res)=>{
     const user = await User.findById(req.user);
-    res.json({user,token: req.token});
+    res.json({user: user,token: req.token});
 });
 authRouter.get('/api/update', async (req,res)=>{
     
