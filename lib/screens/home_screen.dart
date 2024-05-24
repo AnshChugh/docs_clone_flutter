@@ -1,4 +1,6 @@
 import 'package:docs_clone_flutter/colors.dart';
+import 'package:docs_clone_flutter/common/widgets/loader.dart';
+import 'package:docs_clone_flutter/models/document_model.dart';
 import 'package:docs_clone_flutter/repository/auth_repository.dart';
 import 'package:docs_clone_flutter/repository/document_repository.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +28,10 @@ class HomeScreen extends ConsumerWidget {
     }
   }
 
+  void navigateToDocument(BuildContext context, String documentId) {
+    Routemaster.of(context).push('/document/$documentId');
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
@@ -47,8 +53,43 @@ class HomeScreen extends ConsumerWidget {
               )),
         ],
       ),
-      body: Center(
-        child: Text(ref.watch(userProvider)!.email),
+      body: FutureBuilder(
+        future: ref
+            .watch(documentRepositoryProvider)
+            .getDocuments(ref.watch(userProvider)!.token),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Loader();
+          }
+          return Center(
+            child: Container(
+              margin: const EdgeInsets.only(top: 10),
+              width: 600,
+              child: ListView.builder(
+                itemCount: snapshot.data!.data.length,
+                itemBuilder: (context, index) {
+                  DocumentModel document = snapshot.data!.data[index];
+                  return InkWell(
+                    onTap: ()=> navigateToDocument(context, document.id)  ,
+                    child: SizedBox(
+                      height: 50,
+                      child: Card(
+                        child: Center(
+                          child: Text(
+                            document.title,
+                            style: const TextStyle(
+                              fontSize: 17,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+          );
+        },
       ),
     );
   }

@@ -38,4 +38,35 @@ class DocumentRepository {
 
     return error;
   }
+
+  Future<ErrorModel> getDocuments(String token) async {
+    ErrorModel error = ErrorModel(error: 'Some Error Occurred', data: null);
+
+    try {
+      http.Response res = await http.get(
+        Uri.parse('$host/doc/me'),
+        headers: {
+          'content-type': 'Application/json; charset=UTF-8',
+          '-x-auth-token': token
+        },
+      );
+
+      switch (res.statusCode) {
+        case 200:
+          List<DocumentModel> documents = [];
+          for (int i = 0; i < jsonDecode(res.body).length; i++) {
+            documents.add(
+                DocumentModel.fromJson(jsonEncode(jsonDecode(res.body)[i])));
+          }
+          error = ErrorModel(error: null, data: documents);
+          break;
+        default:
+          error = ErrorModel(error: res.body, data: null);
+      }
+    } catch (e) {
+      error = ErrorModel(error: e.toString(), data: null);
+    }
+
+    return error;
+  }
 }
