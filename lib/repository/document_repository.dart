@@ -69,4 +69,55 @@ class DocumentRepository {
 
     return error;
   }
+
+  Future<ErrorModel> updateTitle(
+      {required String token,
+      required String id,
+      required String title}) async {
+    ErrorModel error = ErrorModel(error: 'Some Error Occured', data: null);
+    try {
+      http.Response res = await http.post(Uri.parse('$host/doc/title'),
+          headers: {
+            'content-type': 'application/json; charset=UTF-8',
+            '-x-auth-token': token
+          },
+          body: jsonEncode({'id': id, 'title': title}));
+      switch (res.statusCode) {
+        case 200:
+          error =
+              ErrorModel(error: null, data: DocumentModel.fromJson(res.body));
+          break;
+        default:
+          error = ErrorModel(error: res.body, data: null);
+      }
+    } catch (e) {
+      error = ErrorModel(error: e.toString(), data: null);
+    }
+    return error;
+  }
+
+  Future<ErrorModel> getDocumentById(
+      {required String token, required String id}) async {
+    ErrorModel error = ErrorModel(error: 'Some Error Occured', data: null);
+    try {
+      http.Response res = await http.get(
+        Uri.parse('$host/doc/$id'),
+        headers: {
+          'content-type': 'application/json; charset=UTF-8',
+          '-x-auth-token': token
+        },
+      );
+      switch (res.statusCode) {
+        case 200:
+          error =
+              ErrorModel(error: null, data: DocumentModel.fromJson(res.body));
+          break;
+        default:
+          throw 'This document does not exist';
+      }
+    } catch (e) {
+      error = ErrorModel(error: e.toString(), data: null);
+    }
+    return error;
+  }
 }
