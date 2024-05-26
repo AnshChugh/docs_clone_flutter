@@ -35,6 +35,9 @@ io.on('connection', (stream)=>{
     stream.on('join', (documentId) =>{
         stream.join(documentId);
         console.log('socket connection successful');
+    });
+    stream.on('typing', (data)=>{
+        stream.broadcast.to(data.room).emit('changes', data);
     })
 })
 
