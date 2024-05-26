@@ -14,7 +14,11 @@ class SocketRepository {
     _socketClient.emit('typing', data);
   }
 
-  void changeListener(Function(Map<String,dynamic>) func) {
+  void changeListener(Function(Map<String, dynamic>) func) {
     _socketClient.on('changes', (data) => func(data));
+  }
+
+  void autoSave(Map<String, dynamic> data) {
+    _socketClient.emit('save', data);
   }
 }

@@ -2,7 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const {password} = require('./secure_credentials');
 const {authRouter} = require('./routes/auth');
-// idk what is this for
+const Document = require('./models/document');
+// idk what is this for (some cross origin stuff)
 const cors = require('cors');
 
 // socket server
@@ -38,8 +39,18 @@ io.on('connection', (stream)=>{
     });
     stream.on('typing', (data)=>{
         stream.broadcast.to(data.room).emit('changes', data);
-    })
+    });
+    stream.on('save', (data)=>{
+        saveData(data);
+    });
 })
+
+const saveData = async (data)=>{
+    let document = await Document.findOneAndUpdate({_id:data.room}, {content:data.delta});
+    // This gives a version error in mongoose
+    // document.content = data.delta;
+    // document = await document.save();
+}
 
 server.listen(PORT,"0.0.0.0", ()=>{
     console.log(`connected at port ${PORT}`);

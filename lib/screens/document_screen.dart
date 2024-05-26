@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:docs_clone_flutter/colors.dart';
 import 'package:docs_clone_flutter/common/widgets/loader.dart';
 import 'package:docs_clone_flutter/models/document_model.dart';
@@ -35,6 +36,13 @@ class _DocumentScreenState extends ConsumerState<DocumentScreen> {
           Delta.fromJson(data['delta']),
           _controller?.selection ?? const TextSelection.collapsed(offset: 0),
           quill.ChangeSource.remote);
+    });
+
+    Timer.periodic(const Duration(seconds: 2), (timer) {
+      socketRepository.autoSave(<String, dynamic>{
+        'delta': _controller!.document.toDelta(),
+        'room': widget.id
+      });
     });
   }
 
